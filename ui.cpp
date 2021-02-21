@@ -11,20 +11,25 @@ class UserInterface {
   };
 
   class Header {
+   public:
     string title;
     void RecieveCurState();
   };
 
   class Body {
-    int num_floors = 1;
-    Object noise_level;
+   public:
+    int num_floors;
+    struct noise_level;
     void RecieveCurState();
-  }
+  };
 
   class Footer {
+   public:
     int button_navigator;
-    Object ChangeScreenState(int screen);
-  }
+    struct ChangeScreenState {
+      int screen;
+    } ScreenState;
+  };
 };
 
 void UserInterface::StateManager::InitState() {
@@ -36,14 +41,14 @@ void UserInterface::StateManager::InitState() {
 int main() {
   UserInterface ui;
 
-  ui::Header h;
+  UserInterface::Header h;
   h.RecieveCurState();
 
-  ui::Body b;
+  UserInterface::Body b;
   b.RecieveCurState();
 
-  ui::Footer f;
-  f.ChangeScreenState(int 1);  // screen 1 = home screen
+  UserInterface::Footer f;
+  f.ScreenState.screen = 1;  // screen 1 = home screen
 
   return 0;
 }
