@@ -88,12 +88,12 @@ class Server {
    * @private
    */
   _registerEndpoints() {
-    this._app.post('/api/sound-update', (req, res) => {
+    this._app.post('/api/update-data', (req, res) => {
       // TODO: Parse req data.
       res.status(201);
       res.send();
     });
-    this._app.get('/api/sound-levels', (req, res) => {
+    this._app.get('/api/get-data', (req, res) => {
       res.status(200);
       res.send({data: this._dataServer.getData()});
     });
