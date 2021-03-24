@@ -30,7 +30,7 @@ class DataServer {
    * @public
    */
   getData() {
-
+    return {error: "Not Yet Implemented"};
   }
   /**
    * New data has been received from DataReceiver.

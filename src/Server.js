@@ -70,6 +70,7 @@ class Server {
    */
   run() {
     this._registerEndpoints();
+    this._app.enable('trust proxy');
 
     this._server = this._app.listen(this._port, () => {
       console.log(`Hello World! Server started on port ${this._port}`);
@@ -81,6 +82,7 @@ class Server {
    */
   shutdown() {
     this._removeEndpoints();
+    this._app.disable('trust proxy');
     this._server.close();
   }
   /**
@@ -88,6 +90,10 @@ class Server {
    * @private
    */
   _registerEndpoints() {
+    this._app.use((req, res, next) => {
+      next();
+      console.log(`${req.method} ${res.statusCode} ${req.originalUrl} ${req.ip}`);
+    });
     this._app.post('/api/update-data', (req, res) => {
       // TODO: Parse req data.
       res.status(201);
