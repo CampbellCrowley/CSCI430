@@ -65,7 +65,7 @@ class DataReceiver {
    * @param {function} [cb] Callback once completed.
    */
   handleSetupData(data, cb) {
-    
+    if (typeof cb === 'function') cb({error: 'Not yet implemented', code: 501});
   }
   /**
    * Push data to our data server at periodic intervals.

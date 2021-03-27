@@ -45,7 +45,7 @@ class ServeDataObject {
   serialize() {
     return {
       devices: this.devices,
-      timestamp: Date.now(),
+      timestamp: this.timestamp,
     };
   }
 }
