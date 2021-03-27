@@ -85,6 +85,7 @@ class Server {
     this._app.disable('trust proxy');
     this._server.close();
   }
+
   /**
    * Register endpoint handlers with Express.
    * @private
@@ -96,12 +97,25 @@ class Server {
     });
     this._app.post('/api/update-data', (req, res) => {
       // TODO: Parse req data.
-      res.status(201);
+      res.status(501);
       res.send();
     });
     this._app.get('/api/get-data', (req, res) => {
-      res.status(200);
-      res.send({data: this._dataServer.getData()});
+      // Update cached data.
+      if (this._dataServer.readyToReceiveData()) {
+        this._dataReceiver.pushData(this._dataServer);
+      }
+
+      // Received potentially cached data.
+      const data = this._dataServer.getData();
+      if (data.code) {
+        res.status(data.code);
+      } else if (data.error) {
+        res.status(500);
+      } else {
+        res.status(200);
+      }
+      res.send(data);
     });
     this._app.use((req, res) => {
       res.status(404);

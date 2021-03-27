@@ -1,5 +1,6 @@
 // Author: Campbell Crowley (github@campbellcrowley.com).
 // February, 2021
+const ServeDataObject = require('./ServeDataObject.js');
 
 /**
  * @typedef DeviceNoiseLevel
@@ -56,6 +57,7 @@ class DataReceiver {
       clayton: true,
       ryan: true,
       nate: true,
+      austin: true,
     };
   }
   /**
@@ -73,10 +75,13 @@ class DataReceiver {
   }
   /**
    * Push data to our data server at periodic intervals.
-   * @private
+   * @public
+   * @param {DataServer} dataServer The data server instance to push our data
+   *     into.
    */
-  _pushData() {
-
+  pushData(dataServer) {
+    const obj = new ServeDataObject(this._noiseLevels, this._sensorLocations);
+    dataServer.receiveData(obj);
   }
 }
 
