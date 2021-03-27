@@ -15,10 +15,13 @@ if (require.main === module) {
   const server = new Server(host);
   server.run();
 
-  process.on('SIGINT', () => {
+  const sigint = () => {
     console.log('Caught SIGINT, shutting down...');
+    process.off('SIGINT', sigint);
     server.shutdown();
-  });
+  };
+
+  process.on('SIGINT', sigint);
 } else {
   // Else required by other module...
   module.exports = Server;

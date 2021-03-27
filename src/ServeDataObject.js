@@ -1,5 +1,5 @@
 // Author: Campbell Crowley (github@campbellcrowley.com).
-// February, 2021
+// March, 2021
 
 /**
  * @classdesc Structed data to serve to clients.

@@ -1,6 +1,8 @@
 // Author: Campbell Crowley (github@campbellcrowley.com).
 // February, 2021
 const express = require('express');
+const compression = require('compression');
+const bodyParser = require('body-parser');
 const DataServer = require('./DataServer.js');
 const DataReceiver = require('./DataReceiver.js');
 
@@ -81,7 +83,6 @@ class Server {
    * @public
    */
   shutdown() {
-    this._removeEndpoints();
     this._app.disable('trust proxy');
     this._server.close();
   }
@@ -91,6 +92,10 @@ class Server {
    * @private
    */
   _registerEndpoints() {
+    this._app.use(compression());
+    this._app.use(bodyParser.json());
+    this._app.use(bodyParser.text());
+
     this._app.use((req, res, next) => {
       next();
       console.log(`${req.method} ${res.statusCode} ${req.originalUrl} ${req.ip}`);
@@ -99,6 +104,17 @@ class Server {
       // TODO: Parse req data.
       res.status(501);
       res.send();
+    });
+    this._app.post('/api/setup-device', (req, res) => {
+      this._dataServer.handleSetupData(req.body, (err) => {
+        if (err) {
+          res.status(err.code);
+          res.json(err);
+        } else {
+          res.status(204);
+          res.send();
+        }
+      });
     });
     this._app.get('/api/get-data', (req, res) => {
       // Update cached data.
@@ -115,18 +131,15 @@ class Server {
       } else {
         res.status(200);
       }
-      res.send(data);
+      res.json(data);
     });
     this._app.use((req, res) => {
       res.status(404);
-      res.send({error: 'Ha! You can\'t see that, because it doesn\'t exist!'});
+      res.json({
+        error: 'Ha! You can\'t see that, because it doesn\'t exist!',
+        code: 404,
+      });
     });
-  }
-  /**
-   * Remove all endpoint handlers from Express.
-   * @private
-   */
-  _removeEndpoints() {
   }
 }
 

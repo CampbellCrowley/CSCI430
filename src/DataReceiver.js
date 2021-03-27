@@ -3,21 +3,6 @@
 const ServeDataObject = require('./ServeDataObject.js');
 
 /**
- * @typedef DeviceNoiseLevel
- * @property {string} uid Device unique ID.
- * @property {number} volume Device measured volume level.
- * @property {number} timestamp Timestamp of measured time.
- */
-
-/**
- * @typedef DeviceLocation
- * @property {number} lat Latitude.
- * @property {number} lon Longitude.
- * @property {number} elev Elevation.
- * @property {number} accuracy Accuracy in meters.
- */
-
-/**
  * Parse and process data received from devices.
  * @class
  */
@@ -72,6 +57,15 @@ class DataReceiver {
       volume: volume,
       timestamp: Date.now(),
     };
+  }
+  /**
+   * Handle setup data received from an Admin.
+   * @public
+   * @param {Object} data Config data from app.
+   * @param {function} [cb] Callback once completed.
+   */
+  handleSetupData(data, cb) {
+    
   }
   /**
    * Push data to our data server at periodic intervals.

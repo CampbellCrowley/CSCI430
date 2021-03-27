@@ -1,9 +1,21 @@
 // Author: Campbell Crowley (github@campbellcrowley.com).
 // February, 2021
 const ServeDataObject = require('./ServeDataObject.js');
+const DeviceNoiseLevel = require('./DeviceNoiseLevel.js');
+const DeviceLocation = require('./DeviceLocation.js');
 
 // Time in milliseconds to cache data from DataReceiver.
 const cacheTime = 5000;
+
+const exampleData = new ServeDataObject(
+    {
+      'ID0': new DeviceNoiseLevel(0, 1, Date.now()),
+      'ID1': new DeviceNoiseLevel(1, 2, Date.now()),
+    },
+    {
+      'ID0': new DeviceLocation(10.1, 15.1, 2, 1.0),
+      'ID1': new DeviceLocation(15.1, 25.1, 2, 1.0),
+    });
 
 /**
  * Back-end to prepare data for front-end requests.
@@ -21,7 +33,7 @@ class DataServer {
      * @default
      * @constant
      */
-    this._noiseLevels = new ServeDataObject();;
+    this._noiseLevels = new ServeDataObject();
     /**
      * Timestamp at which data was last received from the DataReceiver.
      * @private
@@ -39,9 +51,17 @@ class DataServer {
   getData() {
     // return {error: 'Not Yet Implemented', code: 501};
     if (this._lastReceiveTime == 0) {
-      return {error: 'No data received from sensors.', code: 500};
+      return {
+        error: 'No data received from sensors.',
+        code: 500,
+      };
     } else if (this._noiseLevels.devices.length == 0) {
-      return {error: 'No data sensors available.', code: 500};
+      // return {error: 'No data sensors available.', code: 500};
+      return {
+        code: 200,
+        message: 'Serving example data. No real device data available.',
+        data: exampleData.serialize(),
+      };
     } else {
       return {data: this._noiseLevels.serialize(), code: 200};
     }
