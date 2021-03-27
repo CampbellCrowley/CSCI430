@@ -1,5 +1,5 @@
-# CSCI 430: Software Engineering Group Project
-Campbell, Clayton, Ryan, Nate
+# CSCI 430: Software Engineering Group Project (Hush)
+Austin, Campbell, Clayton, Ryan, Nate
 
 See each branch for each portion of the project.
 
