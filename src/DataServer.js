@@ -9,8 +9,8 @@ const cacheTime = 5000;
 
 const exampleData = new ServeDataObject(
     {
-      'ID0': new DeviceNoiseLevel(0, 1, Date.now()),
-      'ID1': new DeviceNoiseLevel(1, 2, Date.now()),
+      'ID0': new DeviceNoiseLevel('ID0', 1, Date.now()),
+      'ID1': new DeviceNoiseLevel('ID0', 2, Date.now()),
     },
     {
       'ID0': new DeviceLocation(10.1, 15.1, 2, 1.0),
