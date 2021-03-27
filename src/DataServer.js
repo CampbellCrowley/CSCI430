@@ -7,6 +7,7 @@ const DeviceLocation = require('./DeviceLocation.js');
 // Time in milliseconds to cache data from DataReceiver.
 const cacheTime = 5000;
 
+// Example data for sending in lieu of real data.
 const exampleData = new ServeDataObject(
     {
       'ID0': new DeviceNoiseLevel('ID0', 1, Date.now()),

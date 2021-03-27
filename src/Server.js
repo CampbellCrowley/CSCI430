@@ -98,12 +98,19 @@ class Server {
 
     this._app.use((req, res, next) => {
       next();
-      console.log(`${req.method} ${res.statusCode} ${req.originalUrl} ${req.ip}`);
+      console.log(
+          `${req.method} ${res.statusCode} ${req.originalUrl} ${req.ip}`);
     });
     this._app.post('/api/update-data', (req, res) => {
-      // TODO: Parse req data.
-      res.status(501);
-      res.send();
+      this._dataReceiver.handleData(req.body, (err) => {
+        if (err) {
+          res.status(err.code);
+          res.json(err);
+        } else {
+          res.status(204);
+          res.send();
+        }
+      });
     });
     this._app.post('/api/setup-device', (req, res) => {
       this._dataServer.handleSetupData(req.body, (err) => {
