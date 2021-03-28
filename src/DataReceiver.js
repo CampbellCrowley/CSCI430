@@ -75,19 +75,26 @@ class DataReceiver {
     if (data.id && data.volume) {
       id = data.id;
       volume = data.volume;
-    } else {
-      const split = data.toString().split(';');
+    } else if (typeof data === 'string') {
+      const split = data.split(';');
       id = split[0];
       volume = split[1];
+    } else {
+      cb({error: 'Invalid Data Type.', code: 400});
+      return;
+    }
 
-    if (!DeviceNoiseLevel.validate({id: id, volume: volume})) {
+    if (!id || !DeviceNoiseLevel.validate({id: id, volume: volume})) {
       cb({error: 'Invalid Data.', code: 400});
       return;
     }
 
+    console.log('UPDATING:', id, volume, data);
+
     this._noiseLevels[id] = new DeviceNoiseLevel(id, volume, Date.now());
+    cb();
     this._saveData(id);
-    }
+  }
   /**
    * Handle setup data received from an Admin.
    * @public

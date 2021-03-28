@@ -35,6 +35,7 @@ class DeviceNoiseLevel {
    * @returns {boolean} True if completely valid, false otherwise.
    */
   static validate(obj) {
+    if (!obj) return false;
     if (obj.volume) {
       const num = obj.volume * 1;
       if (Number.isNaN(num)) return false;
@@ -44,10 +45,8 @@ class DeviceNoiseLevel {
       if (Number.isNaN(num)) return false;
       if (num < 0) return false;
     }
-    if (obj.id) {
-      if (typeof obj.id !== 'string') return false;
-      if (obj.id.length > 100) return false;
-    }
+    if (typeof obj.id !== 'string') return false;
+    if (obj.id.length > 100 || obj.id.length == 0) return false;
     return true;
   }
   /**
