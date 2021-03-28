@@ -18,7 +18,7 @@ class DeviceLocation {
    */
   constructor(lat, lon, alt, accuracy, name) {
     let obj = null;
-    if (lat && Number.isNaN(lat)) {
+    if (lat && Number.isNaN(lat * 1)) {
       obj = lat;
       lat = null;
     }

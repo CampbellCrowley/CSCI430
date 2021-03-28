@@ -73,7 +73,7 @@ class DeviceNoiseLevel {
         error = true;
       }
     }
-    if (obj.name) this.name = obj.name;
+    if (obj.id) this.id = obj.id;
 
     return error;
   }
