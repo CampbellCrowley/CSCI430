@@ -114,7 +114,7 @@ class Server {
       });
     });
     this._app.post('/api/setup-device', (req, res) => {
-      this._dataServer.handleSetupData(req.body, (err) => {
+      this._dataReceiver.handleSetupData(req.body, (err) => {
         if (err) {
           res.status(err.code);
           res.json(err);

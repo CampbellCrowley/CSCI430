@@ -1,6 +1,6 @@
 {
   "name": "csci430server",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "CSCI-430 API Server",
   "main": "index.js",
   "scripts": {

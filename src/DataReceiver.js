@@ -89,8 +89,6 @@ class DataReceiver {
       return;
     }
 
-    console.log('UPDATING:', id, volume, data);
-
     this._noiseLevels[id] = new DeviceNoiseLevel(id, volume, Date.now());
     cb();
     this._saveData(id);
