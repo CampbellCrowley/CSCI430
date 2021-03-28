@@ -5,6 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
 
+const DeviceNoiseLevel = require('./DeviceNoiseLevel.js');
+const DeviceLocation = require('./DeviceLocation.js');
+
 // Directory to store each device config file.
 const configPath = './data/configs/';
 // Directory to store last received data value for each device.
