@@ -22,11 +22,12 @@ class ServeDataObject {
      *     location: DeviceLocation}>}
      */
     this.devices = Object.entries(noiseLevels).map((el) => {
+      const location = sensorLocations[el[0]];
       return {
         id: el[0],
-        name: sensorLocations[el[0]].name ?? `Device ${el[0]}`,
+        name: (location && location.name) ?? `Device ${el[0]}`,
         level: el[1],
-        location: sensorLocations[el[0]],
+        location: location,
       };
     });
     /**

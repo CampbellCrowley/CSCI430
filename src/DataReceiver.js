@@ -72,14 +72,13 @@ class DataReceiver {
     }
     let volume = null;
     let id = null;
-    if (typeof data === 'string') {
-      const split = data.split(';');
-      id = split[0];
-      volume = split[1];
-    } else {
+    if (data.id && data.volume) {
       id = data.id;
       volume = data.volume;
-    }
+    } else {
+      const split = data.toString().split(';');
+      id = split[0];
+      volume = split[1];
 
     if (!DeviceNoiseLevel.validate({id: id, volume: volume})) {
       cb({error: 'Invalid Data.', code: 400});
@@ -88,7 +87,7 @@ class DataReceiver {
 
     this._noiseLevels[id] = new DeviceNoiseLevel(id, volume, Date.now());
     this._saveData(id);
-  }
+    }
   /**
    * Handle setup data received from an Admin.
    * @public
@@ -184,7 +183,7 @@ class DataReceiver {
         console.error(err);
       });
     } else {
-      this._mkdirAndWrite(filename, data.serialize());
+      this._mkdirAndWrite(filename, JSON.stringify(data.serialize()));
     }
   }
   /**
@@ -232,7 +231,7 @@ class DataReceiver {
         console.error(err);
       });
     } else {
-      this._mkdirAndWrite(filename, data.serialize());
+      this._mkdirAndWrite(filename, JSON.stringify(data.serialize()));
     }
   }
   /**
@@ -291,9 +290,6 @@ class DataReceiver {
     if (typeof cb !== 'function') cb = () => {};
     const dir = path.dirname(filename);
     mkdirp(dir).then(() => {
-      if (typeof data === 'object' && !Buffer.isBuffer) {
-        data = JSON.stringify(data);
-      }
       const tmpFile = `${filename}.tmp`;
       fs.writeFile(tmpFile, data, (err) => {
         if (err) {
