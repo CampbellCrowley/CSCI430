@@ -97,6 +97,7 @@ class Server {
     this._app.use(bodyParser.text());
 
     this._app.use((req, res, next) => {
+      res.set('Access-Control-Allow-Origin', '*');
       next();
       console.log(
           `${req.method} ${res.statusCode} ${req.originalUrl} ${req.ip}`);
