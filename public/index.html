@@ -57,6 +57,19 @@
             <li>Only <a class="code inline">id</a> and <a class="code inline">username</a> are required. <a class="code inline">id</a> must be the case-sensitive ID of a real known device (example devices wont work currently). USERNAME must be one of the following: <a class="code inline">"campbell"</a>, <a class="code inline">"clayton"</a>, <a class="code inline">"ryan"</a>, <a class="code inline">"nate"</a>, <a class="code inline">"austin"</a> all lower-case.</li>
             <li>All other values are optional, and can be excluded if you do not wish for the value to change.</li>
             <li>Name, Username, and Id are Strings. lat, lon, alt, accuracy, are Numbers (or can be coerced to numbers).</li>
+        </ul>
+      </li>
+      <li>DELETE: <a href="/api/delete-device">/api/delete-device</a>
+        <ul>
+          <li>Delete all data about a given device.</li>
+          <li>Required headers: <a class="code inline">Content-Type: application/json</a></li>
+          <li>Expects an object of the format: <br>
+            <div class="code block">{
+  "id": ID,
+  "username": USERNAME,
+}</div></li>
+          <li>Only <a class="code inline">id</a> and <a class="code inline">username</a> are required. <a class="code inline">id</a> must be the case-sensitive ID of a real known device (example devices wont work currently). USERNAME must be one of the following: <a class="code inline">"campbell"</a>, <a class="code inline">"clayton"</a>, <a class="code inline">"ryan"</a>, <a class="code inline">"nate"</a>, <a class="code inline">"austin"</a> all lower-case.</li>
+        </ul>
       </li>
     </ul>
   </body>
