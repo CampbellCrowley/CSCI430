@@ -146,6 +146,49 @@ class DataReceiver {
   }
 
   /**
+   * Handle a request to delete a known device.
+   * @public
+   * @param {Object} data Data received from request.
+   */
+  handleDeleteRequest(data, cb) {
+    if (typeof cb !== 'function') cb = () => {};
+
+    // Handle malformed requests.
+    if (!data || typeof data !== 'object') {
+      cb({error: 'Empty Request.', code: 400});
+      return;
+    } else if (!data.username) {
+      cb({error: 'Forbidden. Not Authenticated.', code: 403});
+      return;
+    } else if (!this._administrators[data.username]) {
+      cb({error: 'Forbidden. Unknown User.', code: 403});
+      return;
+    } else if (!data.id || !this._noiseLevels[data.id]) {
+      cb({
+        error: 'Unknown Device ID.',
+        message: `Requested ID:"${data.id}" which could not be found.`,
+        code: 400
+      });
+      return;
+    }
+
+    this.deleteData(data.id);
+    cb({message: `Success! Deleted ${data.id}`, code: 200});
+  }
+
+  /**
+   * Delete all device data with the given ID.
+   * @public
+   * @param {string} id The ID of the device to purge.
+   */
+  deleteData(id) {
+    delete this._noiseLevels[id];
+    this._saveData(id);
+    delete this._sensorLocations[id];
+    this._saveConfig(id);
+  }
+
+  /**
    * Load all cached data from disk into memory. This traverses the `cachePath`
    * directory and loads all discovered files. For each discovered file, the
    * correspoding config file will then additionally attempt to be loaded as

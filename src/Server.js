@@ -141,6 +141,18 @@ class Server {
       }
       res.json(data);
     });
+    this._app.delete('/api/delete-device', (req, res) => {
+      const data = this._dataReceiver.handleDeleteRequest(req.body, (err) => {
+        if (err.code) {
+          res.status(err.code);
+        } else if (err.error) {
+          res.status(500);
+        } else {
+          res.status(200);
+        }
+        res.json(err);
+      });
+    });
     this._app.use((req, res) => {
       res.status(404);
       res.json({
