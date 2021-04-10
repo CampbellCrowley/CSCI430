@@ -1,5 +1,5 @@
 import 'package:design_and_prototype/floor_heatmap.dart';
-import 'package:design_and_prototype/setup.dart';
+import 'package:design_and_prototype/setup/list_devices.dart';
 import 'package:flutter/material.dart';
 
 void main() {
