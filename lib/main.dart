@@ -196,14 +196,16 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Divider(),
-            FlatButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Setup()),
-                );
-              },
-              child: Text("Setup"),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Setup()),
+                  );
+                },
+                child: Text("Setup"),
+              ),
             ),
             // FlatButton(
             //   onPressed: () {},
