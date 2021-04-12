@@ -15,7 +15,7 @@ class _DeviceDetailsState extends State<DeviceDetails> {
   void _onItemTapped(int index) async {
     print(index);
     if (index == 0)
-      DatabaseService().setupDevice(widget.device.id, 'clayton', 10, 9, 2);
+      DatabaseService().setupDevice(widget.device.id, 'clayton', 10, 9, 7);
     if (index == 1) {
       var r = await DatabaseService().updateDevice(widget.device.id, 2);
       showSnack(context, r.body.toString());
@@ -31,14 +31,19 @@ class _DeviceDetailsState extends State<DeviceDetails> {
     Device d = widget.device;
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        unselectedItemColor: Colors.grey[300],
+        selectedItemColor:
+            d.location != null ? Colors.grey[300] : Colors.yellow,
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings_input_antenna_sharp),
+            icon: d.location != null
+                ? Icon(Icons.settings_input_antenna_sharp)
+                : Icon(Icons.warning),
             label: 'Configure',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.update),
-            label: 'Update',
+            icon: Icon(Icons.volume_up),
+            label: 'Update Volume',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.delete),
