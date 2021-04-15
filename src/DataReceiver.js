@@ -20,8 +20,10 @@ const cachePath = './data/cache/';
 class DataReceiver {
   /**
    * Constructor.
+   * @param {Authenticator} auth The authenticator to use for verifying admin
+   *     permissions.
    */
-  constructor() {
+  constructor(auth) {
     /**
      * Latest DeviceNoiseLevel info for each device, mapped by device ID.
      * @private
@@ -41,20 +43,12 @@ class DataReceiver {
     this._sensorLocations = {};
 
     /**
-     * To check if a user is an admin.
-     * @TODO: Actually implement a valid way to authenticate users.
+     * Instance of Authenticator.
      * @private
-     * @type {Object.<boolean>}
+     * @type {Authenticator}
      * @constant
-     * @default
      */
-    this._administrators = {
-      campbell: true,
-      clayton: true,
-      ryan: true,
-      nate: true,
-      austin: true,
-    };
+    this._authenticator = auth;
 
     this._loadAllData();
   }
@@ -106,33 +100,75 @@ class DataReceiver {
     if (!data || typeof data !== 'object') {
       cb({error: 'Empty Request.', code: 400});
       return;
-    } else if (!data.username) {
+    }
+
+    this._onlyAdmin(data, cb, () => {
+      if (!data.id || !this._noiseLevels[data.id]) {
+        cb({
+          error: 'Unknown Device ID.',
+          message: `Requested ID:"${data.id}" which could not be found.`,
+          code: 400
+        });
+        return;
+      } else if (!DeviceLocation.validate(data)) {
+        cb({error: 'Invalid Data.', code: 400});
+        return;
+      }
+
+      if (this._sensorLocations[data.id]) {
+        this._sensorLocations[data.id].copy(data);
+        cb({message: 'Updated Config.', code: 200});
+      } else {
+        this._sensorLocations[data.id] = new DeviceLocation(data);
+        cb({message: 'Created Config.', code: 201});
+      }
+
+      this._saveConfig(data.id);
+    });
+  }
+  /**
+   * Fires a callback only when the request is verified to be from an
+   * authenticated admin.
+   * @private
+   * @param {Object} data Request data body.
+   * @param {function} cb Main callback to fire if successCB does not fire. This
+   *     can be because of an error, or user is not an admin.
+   * @param {function} successCB Callback which will fire only if requset is
+   *     from admin.
+   */
+  _onlyAdmin(data, cb, successCB) {
+    // Callback once we know if the request is from an authenticated user.
+    const adminCB = (err, isAdmin) => {
+      if (err) {
+        console.error('Failed to check if admin.');
+        console.error(err);
+        cb({error: 'Internal Server Error', code: 500});
+        return;
+      }
+      if (!isAdmin) {
+        cb({error: 'Forbidden. Unknown User.', code: 403});
+        return;
+      }
+
+      // Only call callback if we have verified the request is from an admin.
+      successCB();
+    };
+
+    if (data.token) {
+      this._authenticator.verify(data.token, (err, decoded) => {
+        if (err) {
+          cb(err);
+          return;
+        }
+
+        this._authenticator.isAdmin(decoded.uid, adminCB)
+      });
+    } else if (data.username) {
+      this._authenticator.isAdmin(data.username, adminCB)
+    } else {
       cb({error: 'Forbidden. Not Authenticated.', code: 403});
       return;
-    } else if (!this._administrators[data.username]) {
-      cb({error: 'Forbidden. Unknown User.', code: 403});
-      return;
-    } else if (!data.id || !this._noiseLevels[data.id]) {
-      cb({
-        error: 'Unknown Device ID.',
-        message: `Requested ID:"${data.id}" which could not be found.`,
-        code: 400
-      });
-      return;
-    } else if (!DeviceLocation.validate(data)) {
-      cb({error: 'Invalid Data.', code: 400});
-      return;
     }
-
-    if (this._sensorLocations[data.id]) {
-      this._sensorLocations[data.id].copy(data);
-      cb({message: 'Updated Config.', code: 200});
-    } else {
-      this._sensorLocations[data.id] = new DeviceLocation(data);
-      cb({message: 'Created Config.', code: 201});
-    }
-
-    this._saveConfig(data.id);
   }
   /**
    * Push data to our data server at periodic intervals.
@@ -157,23 +193,21 @@ class DataReceiver {
     if (!data || typeof data !== 'object') {
       cb({error: 'Empty Request.', code: 400});
       return;
-    } else if (!data.username) {
-      cb({error: 'Forbidden. Not Authenticated.', code: 403});
-      return;
-    } else if (!this._administrators[data.username]) {
-      cb({error: 'Forbidden. Unknown User.', code: 403});
-      return;
-    } else if (!data.id || !this._noiseLevels[data.id]) {
-      cb({
-        error: 'Unknown Device ID.',
-        message: `Requested ID:"${data.id}" which could not be found.`,
-        code: 400
-      });
-      return;
     }
 
-    this.deleteData(data.id);
-    cb({message: `Success! Deleted ${data.id}`, code: 200});
+    this._onlyAdmin(data, cb, () => {
+      if (!data.id || !this._noiseLevels[data.id]) {
+        cb({
+          error: 'Unknown Device ID.',
+          message: `Requested ID:"${data.id}" which could not be found.`,
+          code: 400
+        });
+        return;
+      }
+
+      this.deleteData(data.id);
+      cb({message: `Success! Deleted ${data.id}`, code: 200});
+    });
   }
 
   /**

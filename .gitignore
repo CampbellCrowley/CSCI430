@@ -1,2 +1,4 @@
 node_modules/
 auth.js
+./config/hushadmin-firebase-adminsdk-ntipm-a10b3bbb0d.json
+./config/admins.json

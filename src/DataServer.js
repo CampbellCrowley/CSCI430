@@ -8,7 +8,7 @@ const DeviceLocation = require('./DeviceLocation.js');
 const cacheTime = 5000;
 
 // Example data for sending in lieu of real data.
-const exampleData = new ServeDataObject(
+/* const exampleData = new ServeDataObject(
     {
       'ID0': new DeviceNoiseLevel('ID0', 1, Date.now()),
       'ID1': new DeviceNoiseLevel('ID0', 2, Date.now()),
@@ -16,7 +16,7 @@ const exampleData = new ServeDataObject(
     {
       'ID0': new DeviceLocation(10.1, 15.1, 2, 1.0),
       'ID1': new DeviceLocation(15.1, 25.1, 2, 1.0),
-    });
+    }); */
 
 /**
  * Back-end to prepare data for front-end requests.
@@ -57,12 +57,12 @@ class DataServer {
         code: 500,
       };
     } else if (this._noiseLevels.devices.length == 0) {
-      // return {error: 'No data sensors available.', code: 500};
-      return {
+      return {error: 'No data sensors available.', code: 500};
+      /* return {
         code: 200,
         message: 'Serving example data. No real device data available.',
         data: exampleData.serialize(),
-      };
+      }; */
     } else {
       return {data: this._noiseLevels.serialize(), code: 200};
     }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>CSCI 430 - Hello World</title>
+    <title>CSCI 430 - Hush</title>
 
 <style>
 .code {
@@ -18,14 +18,14 @@
 </style>
   </head>
   <body>
-    <h1>Hello World!</h1>
+    <h1>Hush</h1>
     <h2>Available API Endpoints:</h2>
     <ul>
       <li>
 				GET: <a href="/api/get-data">/api/get-data</a>
 				<ul>
 					<li>Returns currently available data.</li>
-					<li>If no data has been ever received from a device, example data is instead returned.</li>
+					<li>If no data has been ever received from a device, an error is returned.</li>
 				</ul>
 			</li>
       <li>POST: <a href="/api/update-data">/api/update-data</a>
@@ -34,8 +34,8 @@
           <li>Required Headers: <a class="code inline">Content-Type: application/json</a> (if JSON) or <a class="code inline">Content-Type: text/plain</a> (if semi-colon separated string).</li>
           <li>Expects either a string or a JSON object.
             <ul>
-              <li>If sending a string, the server expects a string with the format: <a class="code inline>ID;VOLUME</a>. (ie. the ID first, then a semi-colon, then the volume as a number)</li>
-              <li>If sending a JSON object, the server expects it to be structured as such: <a class="code inline>{"volume": VOLUME, "id": ID}</a>. (Order does not matter, quoted portions must match exactly. VOLUME must be a number.)</li>
+              <li>If sending a string, the server expects a string with the format: <a class="code inline">ID&semi;VOLUME</a>. (ie. the ID first, then a semi-colon, then the volume as a number)</li>
+              <li>If sending a JSON object, the server expects it to be structured as such: <a class="code inline">{"volume": VOLUME, "id": ID}</a>. (Order does not matter, quoted portions must match exactly. VOLUME must be a number.)</li>
             </ul>
           </li>
         </ul>
@@ -47,14 +47,14 @@
           <li>Expects an object of the format: <br>
             <div class="code block">{
   "id": ID,
-  "username": USERNAME,
+  "token": ID_TOKEN,
   "lat": LATITUDE,
   "lon": LONGITUDE,
   "alt": ALTITUDE,
   "accuracy": ACCURACY,
   "name": DEVICE_NAME
 }</div></li>
-            <li>Only <a class="code inline">id</a> and <a class="code inline">username</a> are required. <a class="code inline">id</a> must be the case-sensitive ID of a real known device (example devices wont work currently). USERNAME must be one of the following: <a class="code inline">"campbell"</a>, <a class="code inline">"clayton"</a>, <a class="code inline">"ryan"</a>, <a class="code inline">"nate"</a>, <a class="code inline">"austin"</a> all lower-case.</li>
+            <li>Only <a class="code inline">id</a> and <a class="code inline">token</a> are required. <a class="code inline">id</a> must be the case-sensitive ID of a real known device (example devices wont work currently). ID_TOKEN must be a Firebase Admin ID Token of an admin user.</li>
             <li>All other values are optional, and can be excluded if you do not wish for the value to change.</li>
             <li>Name, Username, and Id are Strings. lat, lon, alt, accuracy, are Numbers (or can be coerced to numbers).</li>
         </ul>
@@ -66,9 +66,9 @@
           <li>Expects an object of the format: <br>
             <div class="code block">{
   "id": ID,
-  "username": USERNAME,
+  "token": ID_TOKEN,
 }</div></li>
-          <li>Only <a class="code inline">id</a> and <a class="code inline">username</a> are required. <a class="code inline">id</a> must be the case-sensitive ID of a real known device (example devices wont work currently). USERNAME must be one of the following: <a class="code inline">"campbell"</a>, <a class="code inline">"clayton"</a>, <a class="code inline">"ryan"</a>, <a class="code inline">"nate"</a>, <a class="code inline">"austin"</a> all lower-case.</li>
+          <li>Only <a class="code inline">id</a> and <a class="code inline">token</a> are required. <a class="code inline">id</a> must be the case-sensitive ID of a real known device (example devices wont work currently). ID_TOKEN must be one a Firebase Admin ID Token of an admin user.</li>
         </ul>
       </li>
     </ul>

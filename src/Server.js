@@ -5,9 +5,11 @@ const compression = require('compression');
 const bodyParser = require('body-parser');
 const DataServer = require('./DataServer.js');
 const DataReceiver = require('./DataReceiver.js');
+const Authenticator = require('./Authenticator.js');
 
 /**
  * Front-end server for user-request handling.
+ * @class
  */
 class Server {
   /**
@@ -50,6 +52,14 @@ class Server {
      */
     this._server = null;
     /**
+     * Instance of Authenticator.
+     *
+     * @private
+     * @constant
+     * @type {Authenticator}
+     */
+    this._authenticator = new Authenticator();
+    /**
      * Instance of DataServer.
      *
      * @private
@@ -64,7 +74,7 @@ class Server {
      * @constant
      * @type {DataReceiver}
      */
-    this._dataReceiver = new DataReceiver();
+    this._dataReceiver = new DataReceiver(this._authenticator);
   }
   /**
    * Start the server, and begin handling requests.
@@ -101,6 +111,21 @@ class Server {
       next();
       console.log(
           `${req.method} ${res.statusCode} ${req.originalUrl} ${req.ip}`);
+    });
+    this._app.post('/api/authenticate', (req, res) => {
+      if (!req.body || !req.body.token) {
+        res.status(403).json({error: 'Invalid or missing ID Token', code: 403});
+        return;
+      }
+      const token = req.body.token;
+      this._authenticator.verify(token, (err, decoded) => {
+        if (err) {
+          res.status(err.code || 403).json(err);
+        } else {
+          res.status(200).json(
+              {message: `Successfully authenticated user: ${decoded.uid}`});
+        }
+      });
     });
     this._app.post('/api/update-data', (req, res) => {
       this._dataReceiver.handleData(req.body, (err) => {
