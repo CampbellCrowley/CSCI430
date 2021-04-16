@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:design_and_prototype/floor_heatmap.dart';
 import 'package:design_and_prototype/models/db.dart';
 import 'package:design_and_prototype/setup/list_devices.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:design_and_prototype/models/floor_model.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -15,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hush',
       theme: ThemeData(
-          primarySwatch: Colors.red,
+          primarySwatch: Colors.grey,
           accentColor: Color(0xff8C2332),
           visualDensity: VisualDensity.adaptivePlatformDensity,
           brightness: Brightness.dark,
@@ -38,11 +43,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<dynamic> floors;
+  Timer timer;
+  var lastUpdated = DateTime.now();
+
+  void timerUpdateFloors() {
+    setState(() {
+      floors = DatabaseService().getFloors();
+      lastUpdated = DateTime.now();
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     floors = DatabaseService().getFloors();
+    timer =
+        Timer.periodic(Duration(seconds: 10), (Timer t) => timerUpdateFloors());
   }
 
   @override
@@ -82,8 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.white,
             ),
             onPressed: () {
-              Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Setup()))
+              Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ListDevices()))
                   .then((value) => setState(() {
                         floors = DatabaseService().getFloors();
                       }));
@@ -187,6 +203,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   return Center(child: CircularProgressIndicator());
                 },
               ),
+            ),
+            Text(
+              'Last Updated: ${lastUpdated.hour}:0${lastUpdated.minute}:${lastUpdated.second}',
+              style: TextStyle(fontSize: 10),
             )
           ],
         ),
@@ -197,6 +217,12 @@ class _MyHomePageState extends State<MyHomePage> {
       //   child: Icon(Icons.add),
       // ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
   }
 }
 

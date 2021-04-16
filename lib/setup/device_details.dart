@@ -1,5 +1,6 @@
 import 'package:design_and_prototype/models/db.dart';
 import 'package:design_and_prototype/models/device_model.dart';
+import 'package:design_and_prototype/setup/setup_device.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -14,15 +15,15 @@ class DeviceDetails extends StatefulWidget {
 class _DeviceDetailsState extends State<DeviceDetails> {
   void _onItemTapped(int index) async {
     print(index);
-    if (index == 0)
-      DatabaseService().setupDevice(widget.device.id, 'clayton', 10, 9, 7);
-    if (index == 1) {
-      var r = await DatabaseService().updateDevice(widget.device.id, 2);
-      showSnack(context, r.body.toString());
-    }
-    if (index == 2) {
-      var r = await DatabaseService().deleteDevice(widget.device.id, 'clayton');
-      showSnack(context, r.body.toString());
+    if (index == 0) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SetupDevice(
+                    device: widget.device,
+                  )));
+    } else {
+      _showMyDialog(index);
     }
   }
 
@@ -39,7 +40,7 @@ class _DeviceDetailsState extends State<DeviceDetails> {
             icon: d.location != null
                 ? Icon(Icons.settings_input_antenna_sharp)
                 : Icon(Icons.warning),
-            label: 'Configure',
+            label: 'Setup',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.volume_up),
@@ -77,7 +78,7 @@ class _DeviceDetailsState extends State<DeviceDetails> {
       //         onPressed: () {
       //           DatabaseService().setupDevice(d.id, 'clayton', 10, 9, 2);
       //         },
-      //         child: Text('Configure Device')),
+      //         child: Text('Setup Device')),
       //     ElevatedButton(
       //         onPressed: () {
       //           DatabaseService().updateDevice(d.id, 2);
@@ -165,6 +166,69 @@ class _DeviceDetailsState extends State<DeviceDetails> {
       SnackBar(
         content: Text(r),
       ),
+    );
+  }
+
+  Future<void> _showMyDialog(int index) async {
+    String title = '';
+    String body = '';
+    if (index == 0) {
+      title = "Setup";
+    }
+    if (index == 1) {
+      title = "Update volume?";
+      body = "This will set the volume to 2.";
+    }
+    if (index == 2) {
+      title = "Delete Device?";
+      body =
+          "Are you sure you want to delete this device?\nThis can't be undone.";
+    }
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(body),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('No')),
+            TextButton(
+              child: Text('Yes',
+                  style: TextStyle(
+                      color: Colors.green[600], fontWeight: FontWeight.w600)),
+              onPressed: () async {
+                if (index == 0) {
+                  showSnack(context,
+                      "device_details.dart: This should not have happened");
+                }
+                if (index == 1) {
+                  var r =
+                      await DatabaseService().updateDevice(widget.device.id, 2);
+                  Navigator.of(context).pop();
+                  showSnack(context, r.body.toString());
+                }
+                if (index == 2) {
+                  var r = await DatabaseService()
+                      .deleteDevice(widget.device.id, 'clayton');
+                  Navigator.of(context).pop();
+                  showSnack(context, r.body.toString());
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:design_and_prototype/models/device_model.dart';
 import 'package:design_and_prototype/models/floor_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 class DatabaseService {
@@ -29,9 +30,9 @@ class DatabaseService {
       final parsed = r.cast<Map<String, dynamic>>();
       List<Device> list =
           parsed.map<Device>((json) => Device.fromJson(json)).toList();
-
       // REMOVE DEVICES THAT HAVE NOT BEEN SETUP
       List<Device> filtered = list.where((i) => i.location != null).toList();
+      filtered = filtered.where((i) => i.location['alt'] != null).toList();
 
       // SORT BY FLOOR
       filtered.sort((a, b) => a.location['alt'].compareTo(b.location['alt']));
@@ -39,23 +40,26 @@ class DatabaseService {
       List floors = [];
       int highestFloor = filtered.last.location['alt'];
       for (var i = 1; i < highestFloor + 1; i++) {
-        floors.add(filtered.where((x) => x.location['alt'] == i).toList());
+        List testt = filtered.where((x) => x.location['alt'] == i).toList();
+        if (testt.isNotEmpty) floors.add(testt);
       }
 
       for (var i = 0; i < floors.length; i++) {
         Floor f;
-        var result =
-            floors[i].map((d) => d.level['volume']).reduce((a, b) => a + b) /
-                floors[i].length;
-        print(result);
+
+        var result = floors[i]
+                .map((d) => d.level['volume'] is String
+                    ? double.parse(d.level['volume'])
+                    : d.level['volume'])
+                .reduce((a, b) => a + b) /
+            floors[i].length;
         f = Floor(
-            altitude: (i + 1).toString(),
+            altitude: (floors[i][0].location['alt']).toString(),
             averageVolume: result,
             numberOfDevices: floors[i].length);
         floors[i] = f;
       }
 
-      print(floors);
       return floors.reversed.toList();
     } else {
       var x = jsonDecode(response.body);
@@ -63,8 +67,11 @@ class DatabaseService {
     }
   }
 
-  Future<http.Response> setupDevice(
-      String id, String username, int lat, int lon, int alt) async {
+  Future<http.Response> setupDevice(String id, String name, String username,
+      double lat, double lon, int alt) async {
+    User user = FirebaseAuth.instance.currentUser;
+    String token = await user.getIdToken(true);
+
     var response = await http.post(
       Uri.https('hush.campbellcrowley.com', 'api/setup-device'),
       headers: <String, String>{
@@ -72,13 +79,14 @@ class DatabaseService {
       },
       body: jsonEncode(<String, dynamic>{
         'id': id,
-        'username': username,
+        'token': token.toString(),
         'lat': lat,
         'lon': lon,
         'alt': alt,
+        'accuracy': 1,
+        'name': name,
       }),
     );
-    print(response.body);
     return response;
   }
 
