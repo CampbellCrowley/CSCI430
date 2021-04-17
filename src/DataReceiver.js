@@ -163,8 +163,6 @@ class DataReceiver {
 
         this._authenticator.isAdmin(decoded.uid, adminCB)
       });
-    } else if (data.username) {
-      this._authenticator.isAdmin(data.username, adminCB)
     } else {
       cb({error: 'Forbidden. Not Authenticated.', code: 403});
       return;

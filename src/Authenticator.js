@@ -29,7 +29,11 @@ class Authenticator {
     }
     admin.auth()
         .verifyIdToken(token)
-        .then((decodedToken) => cb(null, decodedToken))
+        .then((decodedToken) => {
+          console.log(
+              `Authenticated: ${decodedToken.uid} ${decodedToken.name}`);
+          cb(null, decodedToken)
+        })
         .catch((error) => {
           console.error(`Failed to validate token: ${token}`);
           console.error(error);
