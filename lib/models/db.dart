@@ -91,7 +91,8 @@ class DatabaseService {
   }
 
   Future<http.Response> deleteDevice(String id, String username) async {
-    print(id);
+    User user = FirebaseAuth.instance.currentUser;
+    String token = await user.getIdToken(true);
     var response = await http.delete(
       Uri.https('hush.campbellcrowley.com', 'api/delete-device'),
       headers: <String, String>{
@@ -99,7 +100,7 @@ class DatabaseService {
       },
       body: jsonEncode(<String, dynamic>{
         'id': id,
-        'username': username,
+        'token': token,
       }),
     );
     print(response.body);

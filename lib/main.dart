@@ -6,6 +6,7 @@ import 'package:design_and_prototype/setup/list_devices.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:design_and_prototype/models/floor_model.dart';
+import 'package:package_info/package_info.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Hush',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
           primarySwatch: Colors.grey,
           accentColor: Color(0xff8C2332),
@@ -45,6 +47,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<dynamic> floors;
   Timer timer;
   var lastUpdated = DateTime.now();
+  PackageInfo packageInfo;
+  void getPackageInfo() async {
+    PackageInfo x = await PackageInfo.fromPlatform();
+    setState(() {
+      packageInfo = x;
+    });
+  }
 
   void timerUpdateFloors() {
     setState(() {
@@ -57,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     floors = DatabaseService().getFloors();
+    getPackageInfo();
     timer =
         Timer.periodic(Duration(seconds: 10), (Timer t) => timerUpdateFloors());
   }
@@ -204,10 +214,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
             ),
-            Text(
-              'Last Updated: ${lastUpdated.hour}:0${lastUpdated.minute}:${lastUpdated.second}',
-              style: TextStyle(fontSize: 10),
-            )
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  ' Last Updated: ${lastUpdated.hour}:0${lastUpdated.minute}:${lastUpdated.second}',
+                  style: TextStyle(fontSize: 10),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Version: ${packageInfo.version} ',
+                      style: TextStyle(fontSize: 10),
+                    ),
+                    Text(
+                      'Build: ${packageInfo.buildNumber} ',
+                      style: TextStyle(fontSize: 10),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ],
         ),
       ),

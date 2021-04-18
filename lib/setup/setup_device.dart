@@ -2,11 +2,10 @@ import 'dart:convert';
 
 import 'package:design_and_prototype/models/db.dart';
 import 'package:design_and_prototype/models/device_model.dart';
-import 'package:design_and_prototype/models/floor_model.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SetupDevice extends StatefulWidget {
   final Device device;
@@ -29,9 +28,9 @@ class _SetupDeviceState extends State<SetupDevice> {
   String name = "";
 
   void getDevicesPerFloor() async {
-    List _floors = await DatabaseService().getDevices();
+    List _devices = await DatabaseService().getDevices();
     setState(() {
-      devices = _floors;
+      devices = _devices;
     });
     devices
         .where((i) =>
@@ -141,12 +140,6 @@ class _SetupDeviceState extends State<SetupDevice> {
                 ),
               ),
             ),
-            // for (var i in devices
-            //     .where((i) =>
-            //         i.location != null &&
-            //         i.location['alt'] != null &&
-            //         i.location['alt'] == floor)
-            //     .toList()) ...[Text(i.name)],
           ],
           SizedBox(
             height: 30,
@@ -193,13 +186,32 @@ class _SetupDeviceState extends State<SetupDevice> {
                           imageUrl:
                               "https://library.csuchico.edu/sites/default/files/map-floor-$floor.gif",
                           progressIndicatorBuilder:
-                              (context, url, downloadProgress) =>
-                                  CircularProgressIndicator(
-                                      value: downloadProgress.progress),
+                              (context, url, downloadProgress) => Container(
+                            height: 500,
+                            width: 375,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                            ),
+                          ),
                           errorWidget: (context, url, error) =>
                               Icon(Icons.error),
                         )),
                       ),
+                      for (var i in devices
+                          .where((i) =>
+                              i.location != null &&
+                              i.location['alt'] != null &&
+                              i.location['alt'] == floor)
+                          .toList()) ...[
+                        Positioned(
+                            left: i.location['lat'].toDouble() - 12.5,
+                            top: i.location['lon'].toDouble() - 6.25,
+                            child: SpinKitDoubleBounce(
+                              color: Colors.red,
+                              size: 25.0,
+                            ))
+                      ],
                       Positioned(
                           left: lat - 25,
                           top: lon - 12.5,
@@ -207,6 +219,18 @@ class _SetupDeviceState extends State<SetupDevice> {
                             'assets/esp8266.png',
                             width: 50,
                           ))
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      SpinKitDoubleBounce(
+                        color: Colors.red,
+                        size: 25.0,
+                      ),
+                      Text(' = existing device'),
                     ],
                   ),
                 ),
@@ -371,8 +395,14 @@ class _SetupDeviceState extends State<SetupDevice> {
                               if (r.statusCode != 200)
                                 showSnack(context,
                                     'ERROR: ${json.decode(r.body)['error']}');
-                              else
-                                showSnack(context, json.decode(r.body));
+                              else {
+                                if (r.statusCode == 201)
+                                  showSnack(context,
+                                      "${json.decode(r.body)['message']}");
+                                else if (r.statusCode == 200)
+                                  showSnack(context,
+                                      "${json.decode(r.body)['message']}");
+                              }
                             }),
                       ),
                     ],

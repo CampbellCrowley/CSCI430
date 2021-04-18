@@ -1,4 +1,4 @@
-package com.example.design_and_prototype
+package dev.sudden.designAndPrototype
 
 import io.flutter.embedding.android.FlutterActivity
 
