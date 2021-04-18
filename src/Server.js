@@ -106,6 +106,24 @@ class Server {
     this._app.use(bodyParser.json());
     this._app.use(bodyParser.text());
 
+    this._app.use((err, req, res, next) => {
+      if (err) {
+        console.error('Encountered error while handing request:');
+        console.error(err);
+        if (err instanceof SyntaxError) {
+          res.status(400).json({error: 'Syntax Error', code: 400});
+          console.error(
+              `${req.method} ${res.statusCode} ${req.originalUrl} ${req.ip}`);
+        } else {
+          res.status(400).json({error: 'Unknown Error', code: 400});
+          console.error(
+              `${req.method} ${res.statusCode} ${req.originalUrl} ${req.ip}`);
+        }
+      } else {
+        next();
+      }
+    });
+
     this._app.use((req, res, next) => {
       res.set('Access-Control-Allow-Origin', '*');
       next();
