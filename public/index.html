@@ -71,6 +71,22 @@
           <li>Only <a class="code inline">id</a> and <a class="code inline">token</a> are required. <a class="code inline">id</a> must be the case-sensitive ID of a real known device (example devices wont work currently). ID_TOKEN must be one a Firebase Admin ID Token of an admin user.</li>
         </ul>
       </li>
+      <li>POST: <a href="/api/authenticate">/api/authenticate</a>
+        <ul>
+          <li>Check if a user is an admin, and the token is valid.</li>
+          <li>Required Headers: <a class="code incline">Content-Type: application/json</a></li>
+          <li>Expects an object of the format: <br>
+            <div class="code block">{
+  "token": ID_TOKEN
+}</div></li>
+          <li>Only <a class="code inline">token</a> is required.</li>
+          <li>A JSON object will be returned with <a class="code inline">isAdmin</a> as a boolean will be available:<br>
+            <div class="code block">{
+   "isAdmin": false,
+   "message": "More info..."
+}</div>
+        </ul>
+      </li>
     </ul>
   </body>
 </html>

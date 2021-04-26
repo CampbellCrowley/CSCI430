@@ -140,8 +140,16 @@ class Server {
         if (err) {
           res.status(err.code || 403).json(err);
         } else {
-          res.status(200).json(
-              {message: `Successfully authenticated user: ${decoded.uid}`});
+          this._authenticator.isAdmin(decoded.uid, (err, isAdmin) => {
+            if (err) {
+              res.status(err.code || 403).json(err);
+            } else {
+              res.status(200).json({
+                isAdmin: isAdmin,
+                message: `Successfully authenticated user: ${decoded.uid}`
+              });
+            }
+          });
         }
       });
     });
