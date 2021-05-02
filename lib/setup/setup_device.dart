@@ -176,51 +176,54 @@ class _SetupDeviceState extends State<SetupDevice> {
                       lon = x.localPosition.dy;
                     });
                   },
-                  child: Stack(
-                    children: [
-                      Container(
-                        child: Center(
-                            child: CachedNetworkImage(
-                          // height: 500,
-                          width: 375,
-                          imageUrl:
-                              "https://library.csuchico.edu/sites/default/files/map-floor-$floor.gif",
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) => Container(
-                            height: 500,
-                            width: 375,
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                  value: downloadProgress.progress),
+                  child: devices != null
+                      ? Stack(
+                          children: [
+                            Container(
+                              child: Center(
+                                  child: CachedNetworkImage(
+                                // height: 500,
+                                width: 375,
+                                imageUrl:
+                                    "https://library.csuchico.edu/sites/default/files/map-floor-$floor.gif",
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        Container(
+                                  height: 500,
+                                  width: 375,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                        value: downloadProgress.progress),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                              )),
                             ),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                        )),
-                      ),
-                      for (var i in devices
-                          .where((i) =>
-                              i.location != null &&
-                              i.location['alt'] != null &&
-                              i.location['alt'] == floor)
-                          .toList()) ...[
-                        Positioned(
-                            left: i.location['lat'].toDouble() - 12.5,
-                            top: i.location['lon'].toDouble() - 6.25,
-                            child: SpinKitDoubleBounce(
-                              color: Colors.red,
-                              size: 25.0,
-                            ))
-                      ],
-                      Positioned(
-                          left: lat - 25,
-                          top: lon - 12.5,
-                          child: Image.asset(
-                            'assets/esp8266.png',
-                            width: 50,
-                          ))
-                    ],
-                  ),
+                            for (var i in devices
+                                .where((i) =>
+                                    i.location != null &&
+                                    i.location['alt'] != null &&
+                                    i.location['alt'] == floor)
+                                .toList()) ...[
+                              Positioned(
+                                  left: i.location['lat'].toDouble() - 12.5,
+                                  top: i.location['lon'].toDouble() - 6.25,
+                                  child: SpinKitDoubleBounce(
+                                    color: Colors.red,
+                                    size: 25.0,
+                                  ))
+                            ],
+                            Positioned(
+                                left: lat - 25,
+                                top: lon - 12.5,
+                                child: Image.asset(
+                                  'assets/esp8266.png',
+                                  width: 50,
+                                ))
+                          ],
+                        )
+                      : Text(''),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -366,13 +369,7 @@ class _SetupDeviceState extends State<SetupDevice> {
                           style: ElevatedButton.styleFrom(
                             primary: Colors.grey[500],
                           ),
-                          onPressed: () => DatabaseService().setupDevice(
-                              widget.device.id,
-                              name,
-                              'clayton',
-                              lat,
-                              lon,
-                              floor),
+                          onPressed: () => Navigator.of(context).pop(),
                         ),
                       ),
                       Container(
