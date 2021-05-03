@@ -304,6 +304,10 @@ class _ListDevicesState extends State<ListDevices> {
                   future: devices,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
+                      var devicesToSetup = snapshot.data
+                          .where((i) =>
+                              i.location == null || i.location['alt'] == null)
+                          .toList();
                       return ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -312,8 +316,15 @@ class _ListDevicesState extends State<ListDevices> {
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                height: 10,
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Text(
+                                  "Setup Devices",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                               ),
                               GridView(
                                 physics: ClampingScrollPhysics(),
@@ -325,11 +336,44 @@ class _ListDevicesState extends State<ListDevices> {
                                         childAspectRatio: 2.0,
                                         mainAxisSpacing: 5),
                                 children: [
-                                  for (var i in snapshot.data
-                                      .where((i) =>
-                                          i.location == null ||
-                                          i.location['alt'] == null)
-                                      .toList()) ...[
+                                  if (devicesToSetup.length == 0)
+                                    Card(
+                                        elevation: 10,
+                                        child: GridTile(
+                                          header: Container(
+                                              padding: EdgeInsets.only(top: 3),
+                                              height: 25,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey[800]
+                                                      .withOpacity(0.6)),
+                                              child: Text(
+                                                "No devices pending setup",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.grey[100],
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              )),
+                                          child: Icon(
+                                            Icons.check,
+                                            color: Colors.green,
+                                          ),
+                                          footer: Container(
+                                              padding: EdgeInsets.only(top: 3),
+                                              height: 25,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey[800]
+                                                      .withOpacity(0.6)),
+                                              child: Text(
+                                                "...",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.grey[100]),
+                                              )),
+                                        )),
+                                  for (var i in devicesToSetup) ...[
                                     Card(
                                         elevation: 10,
                                         child: InkWell(
@@ -386,7 +430,7 @@ class _ListDevicesState extends State<ListDevices> {
                                         ))
                                   ]
                                 ],
-                              )
+                              ),
                             ],
                           ),
                           // if (deviceSelected) ...[

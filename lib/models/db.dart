@@ -112,8 +112,8 @@ class DatabaseService {
     }
   }
 
-  Future<http.Response> setupDevice(String id, String name, String username,
-      double lat, double lon, int alt) async {
+  Future<http.Response> setupDevice(
+      String id, String name, double lat, double lon, int alt) async {
     User user = FirebaseAuth.instance.currentUser;
     String token = await user.getIdToken(true);
 
@@ -135,7 +135,7 @@ class DatabaseService {
     return response;
   }
 
-  Future<http.Response> deleteDevice(String id, String username) async {
+  Future<http.Response> deleteDevice(String id) async {
     User user = FirebaseAuth.instance.currentUser;
     String token = await user.getIdToken(true);
     var response = await http.delete(

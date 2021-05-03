@@ -59,8 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     floors = DatabaseService().getFloors();
 
-    timer =
-        Timer.periodic(Duration(seconds: 10), (Timer t) => timerUpdateFloors());
+    timer = Timer.periodic(
+        Duration(seconds: 10000), (Timer t) => timerUpdateFloors());
   }
 
   @override
@@ -96,8 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(
-              Icons.settings,
-              color: Colors.white,
+              Icons.info,
+              color: Colors.grey,
             ),
             onPressed: () {
               Navigator.push(context,
@@ -337,7 +337,7 @@ class NoiseMeter extends StatelessWidget {
           SizedBox(
             width: 2,
           ),
-          (averageVolume.floor() >= 8)
+          (averageVolume.floor() > 8)
               ? Container(
                   height: 90,
                   width: 4,

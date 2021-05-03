@@ -177,7 +177,7 @@ class _DeviceDetailsState extends State<DeviceDetails> {
     }
     if (index == 1) {
       title = "Update volume?";
-      body = "This will set the volume to 2.";
+      body = "Select volume to set.";
     }
     if (index == 2) {
       title = "Delete Device?";
@@ -199,33 +199,105 @@ class _DeviceDetailsState extends State<DeviceDetails> {
             ),
           ),
           actions: <Widget>[
+            if (index == 1)
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      FlatButton(
+                          color: Colors.green[300],
+                          textColor: Colors.black,
+                          onPressed: () async {
+                            var r = await DatabaseService()
+                                .updateDevice(widget.device.id, 2);
+                            Navigator.of(context).pop();
+                            showSnack(
+                                context, r.body.toString() + 'Volume set to 2');
+                          },
+                          child: Text('2')),
+                      SizedBox(
+                        width: 3,
+                      ),
+                      FlatButton(
+                          color: Colors.yellow[200],
+                          textColor: Colors.black,
+                          onPressed: () async {
+                            var r = await DatabaseService()
+                                .updateDevice(widget.device.id, 4);
+                            Navigator.of(context).pop();
+                            showSnack(
+                                context, r.body.toString() + 'Volume set to 4');
+                          },
+                          child: Text('4')),
+                      SizedBox(
+                        width: 3,
+                      ),
+                      FlatButton(
+                          color: Colors.orange[200],
+                          textColor: Colors.black,
+                          onPressed: () async {
+                            var r = await DatabaseService()
+                                .updateDevice(widget.device.id, 6);
+                            Navigator.of(context).pop();
+                            showSnack(
+                                context, r.body.toString() + 'Volume set to 6');
+                          },
+                          child: Text('6')),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      FlatButton(
+                          color: Colors.red[200],
+                          textColor: Colors.black,
+                          onPressed: () async {
+                            var r = await DatabaseService()
+                                .updateDevice(widget.device.id, 8);
+                            Navigator.of(context).pop();
+                            showSnack(
+                                context, r.body.toString() + 'Volume set to 8');
+                          },
+                          child: Text('8')),
+                      SizedBox(
+                        width: 3,
+                      ),
+                      FlatButton(
+                          color: Colors.red[400],
+                          textColor: Colors.black,
+                          onPressed: () async {
+                            var r = await DatabaseService()
+                                .updateDevice(widget.device.id, 10);
+                            Navigator.of(context).pop();
+                            showSnack(context,
+                                r.body.toString() + 'Volume set to 10');
+                          },
+                          child: Text('10'))
+                    ],
+                  ),
+                ],
+              ),
             TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('No')),
-            TextButton(
-              child: Text('Yes',
-                  style: TextStyle(
-                      color: Colors.green[600], fontWeight: FontWeight.w600)),
-              onPressed: () async {
-                if (index == 0) {
-                  showSnack(context,
-                      "device_details.dart: This should not have happened");
-                }
-                if (index == 1) {
-                  var r =
-                      await DatabaseService().updateDevice(widget.device.id, 2);
-                  Navigator.of(context).pop();
-                  showSnack(context, r.body.toString());
-                }
-                if (index == 2) {
-                  var r = await DatabaseService()
-                      .deleteDevice(widget.device.id, 'clayton');
-                  Navigator.of(context).pop();
-                  showSnack(context, r.body.toString());
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
+                child: Text('Cancel')),
+            if (index != 1)
+              TextButton(
+                child: Text('Yes',
+                    style: TextStyle(
+                        color: Colors.green[600], fontWeight: FontWeight.w600)),
+                onPressed: () async {
+                  if (index == 0) {
+                    showSnack(context,
+                        "device_details.dart: This should not have happened");
+                  }
+                  if (index == 2) {
+                    var r =
+                        await DatabaseService().deleteDevice(widget.device.id);
+                    Navigator.of(context).pop();
+                    showSnack(context, r.body.toString());
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
           ],
         );
       },
