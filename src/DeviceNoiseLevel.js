@@ -21,6 +21,9 @@ class DeviceNoiseLevel {
     }
     this.id = id ?? null;
     this.volume = volume ?? null;
+    if (this.volume !== null) {
+      this.volume = this.volume * 1;
+    }
     this.timestamp = timestamp ?? 0;
 
     if (obj) this.copy(obj);
@@ -36,9 +39,11 @@ class DeviceNoiseLevel {
    */
   static validate(obj) {
     if (!obj) return false;
-    if (obj.volume) {
+    if (obj.volume !== null && obj.volume !== undefined) {
       const num = obj.volume * 1;
       if (Number.isNaN(num)) return false;
+    } else {
+      return false;
     }
     if (obj.timestamp) {
       const num = obj.timestamp * 1;

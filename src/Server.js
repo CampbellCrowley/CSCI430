@@ -127,8 +127,8 @@ class Server {
     this._app.use((req, res, next) => {
       res.set('Access-Control-Allow-Origin', '*');
       next();
-      console.log(
-          `${req.method} ${res.statusCode} ${req.originalUrl} ${req.ip}`);
+      console.log(`${req.method} ${res.statusCode} ${req.originalUrl} ${
+          req.ip} ${JSON.stringify(req.body)}`);
     });
     this._app.post('/api/authenticate', (req, res) => {
       if (!req.body || !req.body.token) {
