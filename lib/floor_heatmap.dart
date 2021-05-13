@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:design_and_prototype/models/db.dart';
 import 'package:design_and_prototype/models/device_model.dart';
@@ -15,10 +17,38 @@ class FloorHeatmap extends StatefulWidget {
 
 class _FloorHeatmapState extends State<FloorHeatmap> {
   Future<List<Device>> devices;
+  Timer timer;
+  var lastUpdated = DateTime.now();
+  void timerUpdateFloors(bool showSnackBar) {
+    if (showSnackBar) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Color(0xff8C2332),
+          behavior: SnackBarBehavior.floating, // Add this line
+
+          content: Text(
+            'Sound Levels Updated!',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          duration: Duration(seconds: 1, milliseconds: 750),
+        ),
+      );
+    }
+    setState(() {
+      devices =
+          DatabaseService().getDevicesOnFloor(int.parse(widget.floor.altitude));
+      lastUpdated = DateTime.now();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-
+    timer = Timer.periodic(
+        Duration(seconds: 5), (Timer t) => timerUpdateFloors(false));
     getDevicesOnFloor();
   }
 
@@ -34,8 +64,18 @@ class _FloorHeatmapState extends State<FloorHeatmap> {
     return Container(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Floor ${widget.floor.altitude}'),
-          actions: [],
+          title: Text(
+            'Floor ${widget.floor.altitude}',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
+          actions: [
+            IconButton(
+                icon: Icon(
+                  Icons.refresh,
+                  color: Colors.grey,
+                ),
+                onPressed: () => timerUpdateFloors(true))
+          ],
         ),
         body: FutureBuilder<List<Device>>(
             future: devices,
@@ -99,10 +139,12 @@ class _FloorHeatmapState extends State<FloorHeatmap> {
                     padding: const EdgeInsets.all(8.0),
                     child: Stack(
                       children: [
-                        Container(
-                          color: Colors.grey[900],
-                          width: 375,
-                          height: 400,
+                        Center(
+                          child: Container(
+                            color: Colors.grey[900],
+                            width: 375,
+                            height: 475,
+                          ),
                         ),
                         if (snapshot.hasData)
                           for (var i = 0; i < device.length; i++)
@@ -127,10 +169,10 @@ class _FloorHeatmapState extends State<FloorHeatmap> {
                               index: i,
                             ),
                         // ColorFiltered(
-                        //   colorFilter: ColorFilter.mode(
-                        //     Colors.grey,
-                        //     BlendMode.saturation,
-                        //   ),
+                        // colorFilter: ColorFilter.mode(
+                        //   Colors.grey,
+                        //   BlendMode.saturation,
+                        // ),
                         //   child: Center(
                         //       child: Image.asset(
                         //     'assets/map-floor-4.gif',
@@ -191,6 +233,22 @@ class _FloorHeatmapState extends State<FloorHeatmap> {
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Last Updated',
+                          style: TextStyle(
+                              fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '${lastUpdated.hour}:${lastUpdated.minute}:${lastUpdated.second}',
+                          style: TextStyle(fontSize: 10),
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               );
             }),
@@ -247,8 +305,16 @@ class VolumeHeatMap extends StatelessWidget {
             if (very_loud)
               Container(
                 decoration: BoxDecoration(
-                  // color: Colors.red[300],
+                  color: Colors.red[900],
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red[900].withOpacity(0.9),
+                      spreadRadius: 20,
+                      blurRadius: 15,
+                      offset: Offset(0, 0), // changes position of shadow
+                    ),
+                  ],
                 ),
                 height: 35,
                 width: 35,
@@ -261,8 +327,8 @@ class VolumeHeatMap extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.orange[900].withOpacity(0.9),
-                      spreadRadius: 10,
-                      blurRadius: 30,
+                      spreadRadius: 15,
+                      blurRadius: 20,
                       offset: Offset(0, 0), // changes position of shadow
                     ),
                   ],
@@ -279,7 +345,7 @@ class VolumeHeatMap extends StatelessWidget {
                     BoxShadow(
                       color: Colors.yellow.withOpacity(0.8),
                       spreadRadius: 10,
-                      blurRadius: 30,
+                      blurRadius: 25,
                       offset: Offset(0, 0), // changes position of shadow
                     ),
                   ],
@@ -292,6 +358,14 @@ class VolumeHeatMap extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.green[300],
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withOpacity(0.8),
+                      spreadRadius: 7,
+                      blurRadius: 30,
+                      offset: Offset(0, 0), // changes position of shadow
+                    ),
+                  ],
                 ),
                 height: 35,
                 width: 35,
@@ -301,6 +375,14 @@ class VolumeHeatMap extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.green[200],
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withOpacity(0.8),
+                      spreadRadius: 3,
+                      blurRadius: 30,
+                      offset: Offset(0, 0), // changes position of shadow
+                    ),
+                  ],
                 ),
                 height: 35,
                 width: 35,
@@ -398,22 +480,22 @@ class VolumeToWords extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (volume <= 2) {
-      return Text('Very Quiet',
+      return Text('Very Quiet (${volume})',
           style: TextStyle(fontSize: 12.0, color: Colors.grey[500]));
     } else if (volume <= 4) {
-      return Text('Quiet',
+      return Text('Quiet (${volume})',
           style: TextStyle(fontSize: 12.0, color: Colors.grey[500]));
     } else if (volume <= 6) {
-      return Text('Moderate',
+      return Text('Moderate (${volume})',
           style: TextStyle(fontSize: 12.0, color: Colors.grey[500]));
     } else if (volume <= 8) {
-      return Text('Loud',
+      return Text('Loud (${volume})',
           style: TextStyle(fontSize: 12.0, color: Colors.grey[500]));
     } else if (volume <= 10) {
-      return Text('Very Loud',
+      return Text('Very Loud (${volume})',
           style: TextStyle(fontSize: 12.0, color: Colors.grey[500]));
     } else {
-      return Text('Volume',
+      return Text('',
           style: TextStyle(fontSize: 12.0, color: Colors.grey[500]));
     }
   }

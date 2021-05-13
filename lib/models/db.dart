@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:design_and_prototype/auth/google_login.dart';
 import 'package:design_and_prototype/models/device_model.dart';
 import 'package:design_and_prototype/models/floor_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -166,5 +167,26 @@ class DatabaseService {
     );
     print(response.body);
     return response;
+  }
+
+  Future<bool> isUserAdmin() async {
+    User user = FirebaseAuth.instance.currentUser;
+    String token = await user.getIdToken(true);
+    var response = await http.post(
+      Uri.https('hush.campbellcrowley.com', 'api/authenticate'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'token': token,
+      }),
+    );
+    if (json.decode(response.body)['isAdmin'] == true) {
+      return true;
+    } else {
+      await FirebaseAuth.instance.signOut();
+      await googleSignIn.signOut();
+      return false;
+    }
   }
 }

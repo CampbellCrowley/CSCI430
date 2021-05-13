@@ -384,17 +384,18 @@ class _SetupDeviceState extends State<SetupDevice> {
                             onPressed: () async {
                               var r = await DatabaseService().setupDevice(
                                   widget.device.id, name, lat, lon, floor);
-                              if (r.statusCode != 200)
+
+                              if (r.statusCode == 201)
+                                showSnack(context,
+                                    "${json.decode(r.body)['message']}");
+                              else if (r.statusCode == 200)
+                                showSnack(context,
+                                    "${json.decode(r.body)['message']}");
+                              else if (r.statusCode == 204)
+                                showSnack(context, "Success!");
+                              else
                                 showSnack(context,
                                     'ERROR: ${json.decode(r.body)['error']}');
-                              else {
-                                if (r.statusCode == 201)
-                                  showSnack(context,
-                                      "${json.decode(r.body)['message']}");
-                                else if (r.statusCode == 200)
-                                  showSnack(context,
-                                      "${json.decode(r.body)['message']}");
-                              }
                             }),
                       ),
                     ],

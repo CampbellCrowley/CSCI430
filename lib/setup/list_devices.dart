@@ -23,7 +23,7 @@ class ListDevices extends StatefulWidget {
 class _ListDevicesState extends State<ListDevices> {
   double x_pos = 0.0;
   double y_pos = 0.0;
-  Future<dynamic> devices;
+  Future<List<Device>> devices;
 
   bool deviceSelected = false;
   bool isSignedIn = false;
@@ -41,6 +41,63 @@ class _ListDevicesState extends State<ListDevices> {
     setState(() {
       packageInfo = x;
     });
+  }
+
+  void showSnack(BuildContext context, String r) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(r),
+      ),
+    );
+  }
+
+  Future<void> _deleteDevice(String deviceId) async {
+    String title = '';
+    String body = '';
+
+    title = "Delete Device?";
+    body =
+        "Are you sure you want to delete this device?\nThis can't be undone.";
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(body),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Yes',
+                  style: TextStyle(
+                      color: Colors.green[600], fontWeight: FontWeight.w600)),
+              onPressed: () async {
+                var r = await DatabaseService().deleteDevice(deviceId);
+                Navigator.of(context).pop();
+                if (json.decode(r.body)['message'] != null)
+                  showSnack(context, json.decode(r.body)['message']);
+                else if (json.decode(r.body)['error'] != null)
+                  showSnack(context, json.decode(r.body)['error']);
+              },
+            ),
+            TextButton(
+              child: Text('Cancel',
+                  style: TextStyle(
+                      color: Colors.grey[600], fontWeight: FontWeight.w600)),
+              onPressed: () async {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -251,13 +308,19 @@ class _ListDevicesState extends State<ListDevices> {
                               padding: EdgeInsets.all(8)),
                           // color: Colors.white,
                           // splashColor: Colors.grey,
-                          onPressed: () {
+                          onPressed: () async {
                             try {
-                              signInWithGoogle().then((result) {
+                              signInWithGoogle().then((result) async {
                                 if (result != null) {
                                   print("Signed in with Google.");
+                                  bool isAdmin =
+                                      await DatabaseService().isUserAdmin();
                                   setState(() {
-                                    isSignedIn = true;
+                                    if (isAdmin) {
+                                      isSignedIn = true;
+                                    } else {
+                                      isSignedIn = false;
+                                    }
                                   });
                                 } else {
                                   print(
@@ -517,6 +580,9 @@ class _ListDevicesState extends State<ListDevices> {
                                                               .getDevices();
                                                     }));
                                           },
+                                          onLongPress: () {
+                                            _deleteDevice(d.id);
+                                          },
                                           child: Row(
                                             children: [
                                               Padding(
@@ -563,10 +629,54 @@ class _ListDevicesState extends State<ListDevices> {
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
                                                                   .start,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
                                                           children: [
-                                                            Text('ID: ${d.id}'),
-                                                            Text(
-                                                                'Avg. Volume: ${d.level['volume']}'),
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  'Device id: ',
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
+                                                                Text('${d.id}'),
+                                                              ],
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Text('Volume: ',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold)),
+                                                                Text(
+                                                                    '${d.level['volume']}')
+                                                              ],
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                    'Latitude: ',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold)),
+                                                                Text(
+                                                                    '${d.location['lat'].toStringAsFixed(2)}')
+                                                              ],
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                    'Longitude: ',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold)),
+                                                                Text(
+                                                                    '${d.location['lon'].toStringAsFixed(2)}')
+                                                              ],
+                                                            ),
                                                           ],
                                                         ),
                                                       ),

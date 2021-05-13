@@ -59,8 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     floors = DatabaseService().getFloors();
 
-    timer = Timer.periodic(
-        Duration(seconds: 10000), (Timer t) => timerUpdateFloors());
+    timer =
+        Timer.periodic(Duration(seconds: 3), (Timer t) => timerUpdateFloors());
   }
 
   @override
@@ -154,7 +154,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                             ),
                                             Text(
                                               '${f.altitude}',
-                                              style: TextStyle(fontSize: 70),
+                                              style: TextStyle(
+                                                  fontSize: 74,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color(0xff8C2332)),
                                             ),
                                           ],
                                         ),
@@ -170,17 +173,52 @@ class _MyHomePageState extends State<MyHomePage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
+                                            Text(''),
                                             Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
                                               children: [
-                                                Text(
-                                                    'Avg. Volume: ${f.averageVolume}'),
-                                                f.numberOfDevices == 1
-                                                    ? Text(
-                                                        '${f.numberOfDevices} device')
-                                                    : Text(
-                                                        '${f.numberOfDevices} devices')
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                        '${f.averageVolume.toStringAsPrecision(2)}',
+                                                        style: TextStyle(
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Colors
+                                                                .grey[200])),
+                                                    Text('Average Volume',
+                                                        style: TextStyle(
+                                                            fontSize: 12,
+                                                            color:
+                                                                Colors.grey)),
+                                                  ],
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    Text('${f.numberOfDevices}',
+                                                        style: TextStyle(
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Colors
+                                                                .grey[200])),
+                                                    f.numberOfDevices == 1
+                                                        ? Text('Device',
+                                                            style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .grey))
+                                                        : Text('Total Devices',
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .grey)),
+                                                  ],
+                                                )
                                               ],
                                             ),
                                             Align(
@@ -210,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  ' Last Updated: ${lastUpdated.hour}:0${lastUpdated.minute}:${lastUpdated.second}',
+                  ' Last Updated: ${lastUpdated.hour}:${lastUpdated.minute}:${lastUpdated.second}',
                   style: TextStyle(fontSize: 10),
                 ),
               ],
