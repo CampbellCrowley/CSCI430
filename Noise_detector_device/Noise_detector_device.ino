@@ -20,7 +20,7 @@ void setup() {
 
 void loop() {
  // Serial.println("start");
-  String deviceID = "myRyRybody";
+  String deviceID = "DEVICE_NAME_HERE";
 	int totalVolume = 0;
 	int volumeValues[1000] = {};
   int timer = millis();
