@@ -1,8 +1,8 @@
 #define SERVER_IP_UPDATE_DATA "http://hush.campbellcrowley.com/api/update-data"
 
 #ifndef STASSID
-#define STASSID "BlueBree819"
-#define STAPSK  "EKP8191917"
+#define STASSID "YOUR_WIFI_NAME_HERE"
+#define STAPSK  "YOUR_WIFI_PASSWORD_HERE"
 #endif
 
 void WifiInit(){
