@@ -19,8 +19,8 @@
 //#define SERVER_IP "" // PC address with emulation on host
 
 
-String deviceID = "RaspberryPie";  // BlueberryPie RaspberryPie ApplePie
-                                   // PumpkinPie PecanPie SugarCreamPie
+String deviceID = "DEVICE_NAME_HERE";  // BlueberryPie RaspberryPie ApplePie
+                                       // PumpkinPie PecanPie SugarCreamPie
 
 int arr[10] = {1,2,3,4,5,6,7,8,9,10};
 
